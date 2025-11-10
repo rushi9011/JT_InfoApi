@@ -1,0 +1,6 @@
+@JT_InfoApi.API_HostAddress = http://localhost:5241
+
+GET {{JT_InfoApi.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

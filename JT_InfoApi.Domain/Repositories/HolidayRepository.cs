@@ -1,27 +1,32 @@
 ﻿using JT_InfoApi.Domain.Entities;
 using JT_InfoApi.Domain.Interfaces;
+using JT_InfoApi.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace JT_InfoApi.Domain.Repositories
 {
     public class HolidayRepository(AppDbContext _context) : IHolidayRepository
     {
-        public async Task<IEnumerable<JT_Public_Holiday>> GetByCountryAndYearAsync(string countryCode, int year, string? regionCode = null)
+        public async Task<IEnumerable<PublicHolidayResult>> GetByCountryAndYearAsync(
+        string countryCode,
+        int year,
+        string? regionCode = null)
         {
             year = year == 0 ? DateTime.Now.Year : year;
 
-            var query = _context.JT_Public_Holidays
-                .Where(h => h.CtyCode == countryCode && h.PHolDate.Year == year);
-
-            if (!string.IsNullOrWhiteSpace(regionCode))
-            {
-                query = query.Where(h => h.CtyRegionCode == regionCode);
-            }
-
-            return await query
-                .OrderBy(h => h.PHolDate)
+                return await _context.Set<PublicHolidayResult>()
+                .FromSqlRaw("EXEC sp_GetPublicHolidaysByCountryAndYear @CountryCode = {0}, @Year = {1}, @RegionCode = {2}",
+                    countryCode, year, regionCode)
                 .AsNoTracking()
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Country>> GetAllAsync()
+        {
+            return await _context.Countries.Include(x => x.Regions)
+                .AsNoTracking()
+                .ToListAsync();
+        }
+
     }
 }

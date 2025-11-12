@@ -9,13 +9,13 @@ namespace JT_InfoApi.Controllers
     {
         [HttpGet]
         [Route("/get-holidays")]
-        public async Task<IActionResult> GetHolidays([FromQuery] string country, [FromQuery] int year, [FromQuery] string? region = null)
+        public async Task<IActionResult> GetHolidays([FromQuery] string country, [FromQuery] int year, [FromQuery] string region)
         {
 
             try
             {
-                if (string.IsNullOrWhiteSpace(country))
-                return BadRequest("Country code is required.");
+                if (string.IsNullOrWhiteSpace(region))
+                return BadRequest("Region is required.");
 
                 var holidays = await _holidayService.GetByCountryAndYearAsync(country, year, region);
 
@@ -30,6 +30,14 @@ namespace JT_InfoApi.Controllers
                 return BadRequest(ex.Message);
             }
             
+        }
+
+        [HttpGet]
+        [Route("/countries")]
+        public async Task<IActionResult> GetAllCountries()
+        {
+            var result = await _holidayService.GetAllAsync();
+            return Ok(result);
         }
     }
 }

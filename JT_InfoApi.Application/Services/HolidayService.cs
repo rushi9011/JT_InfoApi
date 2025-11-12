@@ -1,6 +1,8 @@
 ﻿using JT_InfoApi.Application.Dtos;
 using JT_InfoApi.Application.Interfaces;
+using JT_InfoApi.Domain.Entities;
 using JT_InfoApi.Domain.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace JT_InfoApi.Appplication.Services
 {
@@ -14,13 +16,28 @@ namespace JT_InfoApi.Appplication.Services
             {
                 Id = x.Id,
                 CtyCode = x.CtyCode,
-                CtyRegionCode = x.CtyRegionCode,
+                RegionCode = x.RegionCode,
                 LastUpdated = x.LastUpdated,
                 PHolDate = x.PHolDate,
                 PHolDesc = x.PHolDesc
             });
         }
 
-
+        public async Task<IEnumerable<CountryDto>> GetAllAsync()
+        {
+            var result = await _holidayRepository.GetAllAsync();
+            return result.Select(c => new CountryDto
+            {
+                CountryCode = c.CountryCode,
+                CountryDesc = c.CountryDesc,
+                Regions = c.Regions?
+            .Select(r => new RegionDto
+            {
+                RegionCode = r.RegionCode,
+                CtyDesc = r.CtyDesc
+            })
+            .ToList()
+            });
+        }
     }
 }

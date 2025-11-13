@@ -13,6 +13,7 @@ namespace JT_InfoApi.Domain
         public DbSet<JT_Public_Holiday> JT_Public_Holidays { get; set; }
         public DbSet<Country> Countries { get; set; }
         public DbSet<Region> Regions { get; set; }
+        public DbSet<Audit> Audits { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -85,6 +86,19 @@ namespace JT_InfoApi.Domain
                 builder.HasOne(x => x.Region)
                     .WithMany(x => x.PublicHolidays)
                     .HasForeignKey(x => x.RegionCode);
+            });
+
+            modelBuilder.Entity<Audit>(entity =>
+            {
+                entity.ToTable("ApiAuditLogs");
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.HttpMethod)
+                    .HasMaxLength(10)
+                    .IsRequired();
+
+                entity.Property(e => e.Timestamp)
+                    .HasDefaultValueSql("GETUTCDATE()");
             });
 
 

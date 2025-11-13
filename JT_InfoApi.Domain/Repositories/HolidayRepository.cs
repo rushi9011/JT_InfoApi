@@ -7,10 +7,7 @@ namespace JT_InfoApi.Domain.Repositories
 {
     public class HolidayRepository(AppDbContext _context) : IHolidayRepository
     {
-        public async Task<IEnumerable<PublicHolidayResult>> GetByCountryAndYearAsync(
-        string countryCode,
-        int year,
-        string? regionCode = null)
+        public async Task<IEnumerable<PublicHolidayResult>> GetByCountryAndYearAsync(string countryCode, int year, string? regionCode = null)
         {
             year = year == 0 ? DateTime.Now.Year : year;
 

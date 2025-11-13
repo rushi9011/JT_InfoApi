@@ -1,5 +1,6 @@
 using JT_InfoApi.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace JT_InfoApi.Controllers
 {
@@ -9,35 +10,17 @@ namespace JT_InfoApi.Controllers
     {
         [HttpGet]
         [Route("/get-holidays")]
-        public async Task<IActionResult> GetHolidays([FromQuery] string country, [FromQuery] int year, [FromQuery] string region)
+        public async Task<IActionResult> GetHolidays([FromQuery] string country, [FromQuery] int year, [FromQuery] string? region, [FromQuery][Required] int custCode)
         {
-
-            try
-            {
-                if (string.IsNullOrWhiteSpace(region))
-                return BadRequest("Region is required.");
-
-                var holidays = await _holidayService.GetByCountryAndYearAsync(country, year, region);
-
-            if (!holidays.Any())
-                return NotFound("No holidays found for the given criteria.");
-
-            return Ok(holidays);
-
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-            
+            return Ok(await _holidayService.GetByCountryAndYearAsync(country, year, region));
         }
 
         [HttpGet]
-        [Route("/countries")]
-        public async Task<IActionResult> GetAllCountries()
+        [Route("/get-countries")]
+        public async Task<IActionResult> GetAllCountries([FromQuery][Required] int custCode)
         {
             var result = await _holidayService.GetAllAsync();
             return Ok(result);
-        }
+        } 
     }
 }

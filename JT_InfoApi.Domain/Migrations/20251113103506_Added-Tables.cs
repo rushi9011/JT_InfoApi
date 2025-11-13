@@ -6,11 +6,29 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace JT_InfoApi.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCommit : Migration
+    public partial class AddedTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ApiAuditLogs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CustCode = table.Column<int>(type: "int", nullable: true),
+                    MethodName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ControllerName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    HttpMethod = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    StatusCode = table.Column<int>(type: "int", nullable: false),
+                    Timestamp = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiAuditLogs", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Countries",
                 columns: table => new
@@ -24,11 +42,28 @@ namespace JT_InfoApi.Domain.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PublicHolidayResult",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    RegionCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CtyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PHolDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    PHolDesc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CountryCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CountryDesc = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Regions",
                 columns: table => new
                 {
                     RegionCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    CtyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CtyCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CtyDesc = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CountryCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
                 },
@@ -80,7 +115,13 @@ namespace JT_InfoApi.Domain.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "ApiAuditLogs");
+
+            migrationBuilder.DropTable(
                 name: "JT_Public_Holidays");
+
+            migrationBuilder.DropTable(
+                name: "PublicHolidayResult");
 
             migrationBuilder.DropTable(
                 name: "Regions");

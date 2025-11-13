@@ -31,11 +31,11 @@ namespace JT_InfoApi.Appplication.Services
                 CountryCode = c.CountryCode,
                 CountryDesc = c.CountryDesc,
                 Regions = c.Regions?
-            .Select(r => new RegionDto
-            {
+             .Select(r => new RegionDto
+             {
                 RegionCode = r.RegionCode,
                 CtyDesc = r.CtyDesc
-            })
+             })
             .ToList()
             });
         }

@@ -32,6 +32,13 @@ namespace JT_InfoApi.API
                             fileSizeLimitBytes: 10_000_000,
                             rollOnFileSizeLimit: true
                         )
+                        .WriteTo.MSSqlServer(
+                            connectionString: General.ConnectionBuilder(),
+                            sinkOptions: new Serilog.Sinks.MSSqlServer.MSSqlServerSinkOptions
+                            {
+                                TableName = "ErrorLogs",
+                                AutoCreateSqlTable = true
+                            })
                         .CreateLogger();
 
             builder.Host.UseSerilog();

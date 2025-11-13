@@ -19,8 +19,7 @@ namespace JT_InfoApi.Controllers
         [Route("/get-countries")]
         public async Task<IActionResult> GetAllCountries([FromQuery][Required] int custCode)
         {
-            var result = await _holidayService.GetAllAsync();
-            return Ok(result);
+            return Ok(await _holidayService.GetAllAsync());
         } 
     }
 }

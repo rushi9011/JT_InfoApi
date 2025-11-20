@@ -9,18 +9,17 @@ namespace JT_InfoApi.Appplication.Services
 
     public class HolidayService(IHolidayRepository _holidayRepository) : IHolidayService
     {
-        public async Task<IEnumerable<HolidayDto>> GetByRegionAndYearAsync(int year, string regionCode, string countryCode)
+        public async Task<HolidayDto> GetByRegionAndYearAsync(int year, string regionCode, string countryCode)
         {
             var holidays = await _holidayRepository.GetByRegionAndYearAsync(year, regionCode, countryCode);
-            return holidays.Select(x => new HolidayDto
+
+            return new HolidayDto
             {
-                Id = x.PublicHolidayId,
-                CtyCode = x.RegionCode,
-                RegionCode = x.RegionCode,
-                LastUpdated = x.LastUpdated,
-                PHolDate = DateOnly.FromDateTime(x.HolidayDate),
-                PHolDesc = x.HolidayDescription
-            });
+                CountryCode = countryCode,
+                RegionCode = regionCode,
+                TotalCount = holidays.Count(),
+                Info = holidays.Select(x => $"{x.HolidayDate:yyyy-MM-dd}, {x.HolidayDescription}")
+            };
         }
 
         public async Task<IEnumerable<CountryDto>> GetAllAsync()

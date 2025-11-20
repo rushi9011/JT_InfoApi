@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace JT_InfoApi.Domain.Migrations
 {
     /// <inheritdoc />
-    public partial class AddedTables : Migration
+    public partial class InitialCommit : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,48 +33,34 @@ namespace JT_InfoApi.Domain.Migrations
                 name: "Countries",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     CountryCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     CountryDesc = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Countries", x => x.CountryCode);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "PublicHolidayResult",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false),
-                    RegionCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CtyCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PHolDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PHolDesc = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastUpdated = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CountryCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CountryDesc = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
+                    table.PrimaryKey("PK_Countries", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Regions",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     RegionCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
-                    CtyCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CtyDesc = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CountryCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false)
+                    CtyName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CountryId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Regions", x => x.RegionCode);
+                    table.PrimaryKey("PK_Regions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Regions_Countries_CountryCode",
-                        column: x => x.CountryCode,
+                        name: "FK_Regions_Countries_CountryId",
+                        column: x => x.CountryId,
                         principalTable: "Countries",
-                        principalColumn: "CountryCode",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -84,7 +70,7 @@ namespace JT_InfoApi.Domain.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RegionCode = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    RegionId = table.Column<int>(type: "int", nullable: false),
                     PHolDate = table.Column<DateTime>(type: "date", nullable: false),
                     PHolDesc = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     LastUpdated = table.Column<DateTime>(type: "datetime", nullable: false)
@@ -93,22 +79,34 @@ namespace JT_InfoApi.Domain.Migrations
                 {
                     table.PrimaryKey("PK_JT_Public_Holidays", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_JT_Public_Holidays_Regions_RegionCode",
-                        column: x => x.RegionCode,
+                        name: "FK_JT_Public_Holidays_Regions_RegionId",
+                        column: x => x.RegionId,
                         principalTable: "Regions",
-                        principalColumn: "RegionCode",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_JT_Public_Holidays_RegionCode",
-                table: "JT_Public_Holidays",
-                column: "RegionCode");
+                name: "IX_Countries_CountryCode",
+                table: "Countries",
+                column: "CountryCode",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Regions_CountryCode",
+                name: "IX_JT_Public_Holidays_RegionId",
+                table: "JT_Public_Holidays",
+                column: "RegionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Regions_CountryId",
                 table: "Regions",
-                column: "CountryCode");
+                column: "CountryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Regions_RegionCode",
+                table: "Regions",
+                column: "RegionCode",
+                unique: true);
         }
 
         /// <inheritdoc />
@@ -119,9 +117,6 @@ namespace JT_InfoApi.Domain.Migrations
 
             migrationBuilder.DropTable(
                 name: "JT_Public_Holidays");
-
-            migrationBuilder.DropTable(
-                name: "PublicHolidayResult");
 
             migrationBuilder.DropTable(
                 name: "Regions");

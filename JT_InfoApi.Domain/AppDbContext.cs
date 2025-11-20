@@ -14,20 +14,24 @@ namespace JT_InfoApi.Domain
         public DbSet<Country> Countries { get; set; }
         public DbSet<Region> Regions { get; set; }
         public DbSet<Audit> Audits { get; set; }
+        public DbSet<PublicHolidayResult> PublicHolidayResults { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PublicHolidayResult>().HasNoKey();
+            modelBuilder.Entity<PublicHolidayResult>().HasNoKey().ToView(null);
 
             modelBuilder.Entity<Country>(builder =>
             {
                 builder.ToTable("Countries");
 
-                builder.HasKey(x => x.CountryCode);
+                builder.HasKey(x => x.Id);
 
                 builder.Property(x => x.CountryCode)
                     .HasMaxLength(10)
                     .IsRequired();
+
+                builder.HasIndex(x => x.CountryCode)
+                    .IsUnique();
 
                 builder.Property(x => x.CountryDesc)
                     .HasMaxLength(100)
@@ -35,30 +39,29 @@ namespace JT_InfoApi.Domain
 
                 builder.HasMany(x => x.Regions)
                     .WithOne(x => x.Country)
-                    .HasForeignKey(x => x.CountryCode);
+                    .HasForeignKey(x => x.CountryId);
             });
 
             modelBuilder.Entity<Region>(builder =>
             {
                 builder.ToTable("Regions");
 
-                builder.HasKey(x => x.RegionCode);
+                builder.HasKey(x => x.Id);
 
                 builder.Property(x => x.RegionCode)
                     .HasMaxLength(10)
                     .IsRequired();
 
-                builder.Property(x => x.CountryCode)
-                    .HasMaxLength(10)
-                    .IsRequired();
+                builder.HasIndex(x => x.RegionCode)
+                .IsUnique();
 
                 builder.HasOne(x => x.Country)
                     .WithMany(x => x.Regions)
-                    .HasForeignKey(x => x.CountryCode);
+                    .HasForeignKey(x => x.CountryId);
 
                 builder.HasMany(x => x.PublicHolidays)
                     .WithOne(x => x.Region)
-                    .HasForeignKey(x => x.RegionCode);
+                    .HasForeignKey(x => x.RegionId);
             });
 
             modelBuilder.Entity<JT_Public_Holiday>(builder =>
@@ -66,10 +69,6 @@ namespace JT_InfoApi.Domain
                 builder.ToTable("JT_Public_Holidays");
 
                 builder.HasKey(x => x.Id);
-
-                builder.Property(x => x.RegionCode)
-                    .HasMaxLength(10)
-                    .IsRequired();
 
                 builder.Property(x => x.PHolDate)
                     .HasColumnType("date")
@@ -85,7 +84,7 @@ namespace JT_InfoApi.Domain
 
                 builder.HasOne(x => x.Region)
                     .WithMany(x => x.PublicHolidays)
-                    .HasForeignKey(x => x.RegionCode);
+                    .HasForeignKey(x => x.RegionId);
             });
 
             modelBuilder.Entity<Audit>(entity =>

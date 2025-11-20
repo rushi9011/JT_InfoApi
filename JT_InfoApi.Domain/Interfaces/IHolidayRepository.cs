@@ -5,7 +5,7 @@ namespace JT_InfoApi.Domain.Interfaces
 { 
     public interface IHolidayRepository
     {
-        Task<IEnumerable<PublicHolidayResult>> GetByCountryAndYearAsync(string countryCode, int year, string? regionCode = null);
+        Task<IEnumerable<PublicHolidayResult>> GetByRegionAndYearAsync(int year, string regionCode, string countryCode);
         Task<IEnumerable<Country>> GetAllAsync();
     }
 }

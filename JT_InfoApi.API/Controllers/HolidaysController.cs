@@ -10,9 +10,9 @@ namespace JT_InfoApi.Controllers
     {
         [HttpGet]
         [Route("/get-holidays")]
-        public async Task<IActionResult> GetHolidays([FromQuery] string country, [FromQuery] int year, [FromQuery] string? region, [FromQuery][Required] int custCode)
+        public async Task<IActionResult> GetHolidays([FromQuery] int year, [FromQuery][Required] int custCode, [FromQuery] string countryCode,[FromQuery] string? region = null)
         {
-            return Ok(await _holidayService.GetByCountryAndYearAsync(country, year, region));
+            return Ok(await _holidayService.GetByRegionAndYearAsync(year, region,countryCode));
         }
 
         [HttpGet]

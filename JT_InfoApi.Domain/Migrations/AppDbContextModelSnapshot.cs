@@ -59,7 +59,14 @@ namespace JT_InfoApi.Domain.Migrations
 
             modelBuilder.Entity("JT_InfoApi.Domain.Entities.Country", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<string>("CountryCode")
+                        .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
 
@@ -68,7 +75,10 @@ namespace JT_InfoApi.Domain.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("CountryCode");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CountryCode")
+                        .IsUnique();
 
                     b.ToTable("Countries", (string)null);
                 });
@@ -92,6 +102,30 @@ namespace JT_InfoApi.Domain.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<int>("RegionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("JT_Public_Holidays", (string)null);
+                });
+
+            modelBuilder.Entity("JT_InfoApi.Domain.Entities.Region", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CtyName")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("RegionCode")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -99,31 +133,10 @@ namespace JT_InfoApi.Domain.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RegionCode");
+                    b.HasIndex("CountryId");
 
-                    b.ToTable("JT_Public_Holidays", (string)null);
-                });
-
-            modelBuilder.Entity("JT_InfoApi.Domain.Entities.Region", b =>
-                {
-                    b.Property<string>("RegionCode")
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("CtyCode")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CtyDesc")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("RegionCode");
-
-                    b.HasIndex("CountryCode");
+                    b.HasIndex("RegionCode")
+                        .IsUnique();
 
                     b.ToTable("Regions", (string)null);
                 });
@@ -159,14 +172,16 @@ namespace JT_InfoApi.Domain.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.ToTable("PublicHolidayResult");
+                    b.ToTable((string)null);
+
+                    b.ToView(null, (string)null);
                 });
 
             modelBuilder.Entity("JT_InfoApi.Domain.Entities.JT_Public_Holiday", b =>
                 {
                     b.HasOne("JT_InfoApi.Domain.Entities.Region", "Region")
                         .WithMany("PublicHolidays")
-                        .HasForeignKey("RegionCode")
+                        .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -177,7 +192,7 @@ namespace JT_InfoApi.Domain.Migrations
                 {
                     b.HasOne("JT_InfoApi.Domain.Entities.Country", "Country")
                         .WithMany("Regions")
-                        .HasForeignKey("CountryCode")
+                        .HasForeignKey("CountryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

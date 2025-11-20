@@ -5,11 +5,11 @@ namespace JT_InfoApi.Application.Dtos
     public class HolidayDto
     {
         public int Id { get; set; }
-        public string CtyCode { get; set; } = string.Empty;
+        public string CtyCode { get; set; }
 
         public string RegionCode { get; set; }
 
-        public DateTime PHolDate { get; set; }
+        public DateOnly PHolDate { get; set; }
 
         public string PHolDesc { get; set; }
 

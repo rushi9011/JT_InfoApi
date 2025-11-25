@@ -1,18 +1,26 @@
 using JT_InfoApi.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
+using JT_InfoApi.Domain.Infrastructure;
+
+using JT_InfoApi.Application.Dtos;
 
 namespace JT_InfoApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class HolidaysController(IHolidayService _holidayService) : ControllerBase
+    public class HolidaysController(IHolidayService _holidayService, ILogger<HolidaysController> logger) : ControllerBase
     {
-        [HttpGet]
+        [HttpPost]
         [Route("/get-holidays")]
-        public async Task<IActionResult> GetHolidays([FromQuery][Required] int custCode, [FromQuery] string countryCode,[FromQuery] int year, [FromQuery] string? region = null)
+        public async Task<IActionResult> GetHolidays([FromBody] HolidayRequestDto request)
         {
-            return Ok(await _holidayService.GetByRegionAndYearAsync(year, region,countryCode));
+            if (!General.EatPork(request.CustCode.ToString(), request.Word, logger))
+
+            {
+                return BadRequest("Unauthorized");
+            }
+            return Ok(await _holidayService.GetByRegionAndYearAsync(request.Year, request.Region,request.CountryCode));
         }
 
         [HttpGet]

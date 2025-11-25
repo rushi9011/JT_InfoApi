@@ -35,7 +35,7 @@ namespace JT_InfoApi.Appplication.Services
              {
                  Id = r.Id,
                 RegionCode = r.RegionCode,
-                CtyName = r.CtyName
+                CtyName = r.RegionName
              })
             .ToList()
             });

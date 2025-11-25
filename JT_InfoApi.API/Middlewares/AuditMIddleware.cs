@@ -1,5 +1,7 @@
 ﻿using JT_InfoApi.Domain;
 using JT_InfoApi.Domain.Entities;
+using System.Text.Json;
+using System.Text;
 
 namespace JT_InfoApi.API.Middlewares
 {
@@ -16,7 +18,16 @@ namespace JT_InfoApi.API.Middlewares
 
         public async Task InvokeAsync(HttpContext context, AppDbContext db)
         {
-            int? custCode = GetCustomerIdFromRequest(context);
+            context.Request.EnableBuffering();
+
+            string requestBodyText = "";
+            using (var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
+            {
+                requestBodyText = await reader.ReadToEndAsync();
+            }
+            context.Request.Body.Position = 0;
+
+            int? custCode = await GetCustomerIdAsync(context);
 
             var endpoint = context.GetEndpoint();
 
@@ -30,6 +41,7 @@ namespace JT_InfoApi.API.Middlewares
 
             // 1️⃣ Capture QueryString
             var queryString = context.Request.QueryString.Value;
+            var requestBody = context.Request.Body?.ToString();
 
             // 2️⃣ Capture Response Body
             var originalBodyStream = context.Response.Body;
@@ -56,6 +68,7 @@ namespace JT_InfoApi.API.Middlewares
                     StatusCode = context.Response.StatusCode,
                     Timestamp = DateTime.Now,
                     QueryString = queryString,
+                    RequestBody = requestBodyText,
                     ResponseBody = responseBodyText
                 };
 
@@ -65,31 +78,55 @@ namespace JT_InfoApi.API.Middlewares
                 // Write response back to client
                 await responseBodyStream.CopyToAsync(originalBodyStream);
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex.Message);
                 context.Response.Body = originalBodyStream;
                 throw;
             }
         }
 
 
-        private int? GetCustomerIdFromRequest(HttpContext context)
+        private async Task<int?> GetCustomerIdAsync(HttpContext context)
         {
-
-            if (context.Request.Headers.TryGetValue("X-Cust-Code", out var headerValue))
+            // 1️⃣ Try from Header
+            if (context.Request.Headers.TryGetValue("custCode", out var headerValue))
             {
-                if (int.TryParse(headerValue, out var id))
-                    return id;
+                if (int.TryParse(headerValue, out var id)) return id;
             }
 
+            // 2️⃣ Try from QueryString
             if (context.Request.Query.TryGetValue("custCode", out var queryValue))
             {
-                if (int.TryParse(queryValue, out var id))
-                    return id;
+                if (int.TryParse(queryValue, out var id)) return id;
+            }
+
+            // 3️⃣ Try from Body
+            context.Request.EnableBuffering();
+            using var reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true);
+            string bodyText = await reader.ReadToEndAsync();
+            context.Request.Body.Position = 0;
+
+            if (!string.IsNullOrEmpty(bodyText))
+            {
+                try
+                {
+                    var json = JsonDocument.Parse(bodyText);
+                    if (json.RootElement.TryGetProperty("custCode", out var prop))
+                    {
+                        if (prop.TryGetInt32(out var id))
+                            return id;
+                    }
+                }
+                catch( Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
             }
 
             return null;
         }
+
     }
 
 }

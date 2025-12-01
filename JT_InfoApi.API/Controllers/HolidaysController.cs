@@ -22,11 +22,11 @@ namespace JT_InfoApi.Controllers
             return Ok(await _holidayService.GetByRegionAndYearAsync(request.Year, request.Region,request.CountryCode));
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("/get-countries")]
-        public async Task<IActionResult> GetAllCountries([FromQuery][Required] int custCode, string word)
+        public async Task<IActionResult> GetAllCountries([FromBody]CountryRequestDto requestDto)
         {
-            if (!General.EatPork(custCode.ToString(), word, logger))
+            if (!General.EatPork(requestDto.CustCode.ToString(), requestDto.Word, logger))
 
             {
                 return BadRequest("Unauthorized");

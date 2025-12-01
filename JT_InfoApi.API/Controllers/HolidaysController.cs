@@ -1,9 +1,8 @@
+using JT_InfoApi.Application.Dtos;
 using JT_InfoApi.Application.Interfaces;
+using JT_InfoApi.Domain.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
-using JT_InfoApi.Domain.Infrastructure;
-
-using JT_InfoApi.Application.Dtos;
 
 namespace JT_InfoApi.Controllers
 {
@@ -25,8 +24,13 @@ namespace JT_InfoApi.Controllers
 
         [HttpGet]
         [Route("/get-countries")]
-        public async Task<IActionResult> GetAllCountries([FromQuery][Required] int custCode)
+        public async Task<IActionResult> GetAllCountries([FromQuery][Required] int custCode, string word)
         {
+            if (!General.EatPork(custCode.ToString(), word, logger))
+
+            {
+                return BadRequest("Unauthorized");
+            }
             return Ok(await _holidayService.GetAllAsync());
         } 
     }

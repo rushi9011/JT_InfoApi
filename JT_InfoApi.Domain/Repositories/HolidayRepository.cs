@@ -12,8 +12,7 @@ namespace JT_InfoApi.Domain.Repositories
             year = year == 0 ? DateTime.Now.Year : year;
 
                 return await _context.Set<PublicHolidayResult>()
-                .FromSqlRaw("EXEC sp_GetPublicHolidaysByRegionAndYear @Year = {0}, @RegionCode = {1}, @CountryCode = {2}",
-                    year, countryCode)
+                .FromSqlRaw("EXEC sp_GetPublicHolidaysByCountryAndYear @Year = {0}, @CountryCode = {1}",year, countryCode)
                 .AsNoTracking()
                 .ToListAsync();
         }

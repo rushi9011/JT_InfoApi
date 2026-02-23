@@ -25,14 +25,14 @@ namespace JT_InfoApi.Domain
 
                 builder.HasKey(x => x.Id);
 
-                builder.Property(x => x.CountryCode)
+                builder.Property(x => x.CtyCode)
                     .HasMaxLength(10)
                     .IsRequired();
 
-                builder.HasIndex(x => x.CountryCode)
+                builder.HasIndex(x => x.CtyCode)
                     .IsUnique();
 
-                builder.Property(x => x.CountryDesc)
+                builder.Property(x => x.CtyDesc)
                     .HasMaxLength(100)
                     .IsRequired();
             });
@@ -57,7 +57,7 @@ namespace JT_InfoApi.Domain
 
                 builder.HasOne(p => p.Country)
                 .WithMany(c => c.PublicHolidays)
-                .HasForeignKey(p => p.CountryId)
+                .HasForeignKey(p => p.CtyId)
                 .IsRequired(false);
             });
 

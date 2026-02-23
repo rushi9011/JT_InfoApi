@@ -13,7 +13,6 @@ namespace JT_InfoApi.Application.Dtos
         public int CustCode { get; set; }
         public string CountryCode { get; set; }
         public int Year { get; set; }
-        public string? Region { get; set; }
         public string? Word { get; set; }
     }
 }

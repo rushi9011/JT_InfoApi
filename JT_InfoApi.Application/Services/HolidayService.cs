@@ -15,7 +15,7 @@ namespace JT_InfoApi.Appplication.Services
 
             return new HolidayDto
             {
-                CountryCode = countryCode,
+                CtyCode = countryCode,
                 TotalCount = holidays.Count(),
                 Info = holidays.Select(x => $"{x.HolidayDate:yyyy-MM-dd}, {x.HolidayDescription}")
             };
@@ -27,7 +27,8 @@ namespace JT_InfoApi.Appplication.Services
             return result.Select(c => new CountryDto
             {
                 Id  = c.Id,
-                CountryCode = c.CountryCode
+                CtyCode = c.CtyCode,
+                CtyDesc = c.CtyDesc
             });
         }
     }

@@ -9,14 +9,13 @@ namespace JT_InfoApi.Appplication.Services
 
     public class HolidayService(IHolidayRepository _holidayRepository) : IHolidayService
     {
-        public async Task<HolidayDto> GetByRegionAndYearAsync(int year, string regionCode, string countryCode)
+        public async Task<HolidayDto> GetByCountryAndYearAsync(int year, string countryCode)
         {
-            var holidays = await _holidayRepository.GetByRegionAndYearAsync(year, regionCode, countryCode);
+            var holidays = await _holidayRepository.GetByCountryAndYearAsync(year, countryCode);
 
             return new HolidayDto
             {
                 CountryCode = countryCode,
-                RegionCode = regionCode,
                 TotalCount = holidays.Count(),
                 Info = holidays.Select(x => $"{x.HolidayDate:yyyy-MM-dd}, {x.HolidayDescription}")
             };
@@ -28,16 +27,7 @@ namespace JT_InfoApi.Appplication.Services
             return result.Select(c => new CountryDto
             {
                 Id  = c.Id,
-                CountryCode = c.CountryCode,
-                CountryDesc = c.CountryDesc,
-                Regions = c.Regions?
-             .Select(r => new RegionDto
-             {
-                 Id = r.Id,
-                RegionCode = r.RegionCode,
-                CtyName = r.RegionName
-             })
-            .ToList()
+                CountryCode = c.CountryCode
             });
         }
     }

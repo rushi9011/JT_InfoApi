@@ -8,6 +8,6 @@ namespace JT_InfoApi.Domain.Entities
         public int Id { get; set; }
         public string CountryCode { get; set; } = string.Empty;
         public string CountryDesc { get; set; } = string.Empty;
-        public virtual ICollection<Region> Regions { get; set; }
+        public ICollection<JT_Public_Holiday>? PublicHolidays { get; set; }
     }
 }

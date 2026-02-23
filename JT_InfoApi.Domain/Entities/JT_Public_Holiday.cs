@@ -10,6 +10,7 @@ namespace JT_InfoApi.Domain.Entities
         public DateTime PHolDate { get; set; }
         public string PHolDesc { get; set; } = string.Empty;
         public DateTime LastUpdated { get; set; }
-        public virtual Region Region { get; set; }
+        public int? CountryId { get; set; }
+        public Country? Country { get; set; }
     }
 }

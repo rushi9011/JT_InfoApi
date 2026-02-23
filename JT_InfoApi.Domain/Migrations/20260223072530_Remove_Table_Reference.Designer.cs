@@ -4,6 +4,7 @@ using JT_InfoApi.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JT_InfoApi.Domain.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260223072530_Remove_Table_Reference")]
+    partial class Remove_Table_Reference
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,9 +106,6 @@ namespace JT_InfoApi.Domain.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CountryId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("LastUpdated")
                         .HasColumnType("datetime");
 
@@ -122,9 +122,36 @@ namespace JT_InfoApi.Domain.Migrations
 
                     b.HasKey("Id");
 
+                    b.ToTable("JT_Public_Holidays", (string)null);
+                });
+
+            modelBuilder.Entity("JT_InfoApi.Domain.Entities.Region", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CountryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RegionCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("RegionName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
                     b.HasIndex("CountryId");
 
-                    b.ToTable("JT_Public_Holidays", (string)null);
+                    b.HasIndex("RegionCode")
+                        .IsUnique();
+
+                    b.ToTable("Regions", (string)null);
                 });
 
             modelBuilder.Entity("JT_InfoApi.Domain.Models.PublicHolidayResult", b =>
@@ -161,18 +188,20 @@ namespace JT_InfoApi.Domain.Migrations
                     b.ToView(null, (string)null);
                 });
 
-            modelBuilder.Entity("JT_InfoApi.Domain.Entities.JT_Public_Holiday", b =>
+            modelBuilder.Entity("JT_InfoApi.Domain.Entities.Region", b =>
                 {
                     b.HasOne("JT_InfoApi.Domain.Entities.Country", "Country")
-                        .WithMany("PublicHolidays")
-                        .HasForeignKey("CountryId");
+                        .WithMany("Regions")
+                        .HasForeignKey("CountryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Country");
                 });
 
             modelBuilder.Entity("JT_InfoApi.Domain.Entities.Country", b =>
                 {
-                    b.Navigation("PublicHolidays");
+                    b.Navigation("Regions");
                 });
 #pragma warning restore 612, 618
         }

@@ -19,7 +19,7 @@ namespace JT_InfoApi.Controllers
             {
                 return BadRequest("Unauthorized");
             }
-            return Ok(await _holidayService.GetByRegionAndYearAsync(request.Year, request.Region,request.CountryCode));
+            return Ok(await _holidayService.GetByCountryAndYearAsync(request.Year,request.CountryCode));
         }
 
         [HttpPost]
